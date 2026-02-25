@@ -4,13 +4,10 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import {
-  useAccount,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-  useSwitchChain,
-} from 'wagmi';
-import { CONTRACT_ABI, CONTRACT_ADDRESS, activeChain } from '../wagmiConfig';
+import { useAccount, useReadContract, useDisconnect, useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from "wagmi";
+import { 
+  WRAPUP_ABI, CONTRACT_ADDRESSES 
+} from "../wagmiConfig";
 import { decodeEventLog } from 'viem';
 import {
   Scale,
@@ -103,7 +100,12 @@ export default function ComparatorPage() {
   const [uploadingChain, setUploadingChain] = useState(false);
 
   const navigate = useNavigate();
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId(); // <--- ADD THIS
+
+  // Dynamically select the correct addresses based on the connected chain
+  // Fallback to a default chain ID (e.g., Arbitrum Sepolia 421614) if undefined
+  const currentContractAddress = CONTRACT_ADDRESSES[chainId] || CONTRACT_ADDRESSES[421614];
   const { switchChain } = useSwitchChain();
 
   const { data: publishHash, isPending: isPublishing, writeContract: writePublish } = useWriteContract();
@@ -162,23 +164,21 @@ export default function ComparatorPage() {
 
       toast.loading('Sign transaction in wallet...', { id: tid });
 
-      const submit = () => {
-        writePublish({
-          address: CONTRACT_ADDRESS,
-          abi: CONTRACT_ABI,
-          functionName: 'submitArticle',
-          args: [ipfsHash],
-        });
-      };
-
-      if (chainId !== activeChain.id) {
-        switchChain({ chainId: activeChain.id }, {
-          onSuccess: submit,
-          onError: () => { toast.error('Network switch failed', { id: tid }); setUploadingChain(false); },
-        });
-      } else {
-        submit();
+      // Ensure the user is on a supported network (meaning an address exists for this chainId)
+      // We check CONTRACT_ADDRESSES directly to avoid the fallback Arbitrum address masking an unsupported chain
+      if (!CONTRACT_ADDRESSES[chainId]) {
+        toast.error('Unsupported network. Please switch to a supported chain in your wallet.', { id: tid });
+        setUploadingChain(false);
+        return;
       }
+
+      // Submit directly to the currently connected supported chain
+      writePublish({
+        address: currentContractAddress,
+        abi: WRAPUP_ABI,
+        functionName: 'submitArticle',
+        args: [ipfsHash],
+      });
     } catch (err) {
       toast.error(err.message || 'Failed to upload', { id: tid });
       setUploadingChain(false);
@@ -191,7 +191,7 @@ export default function ComparatorPage() {
       let blockchainId = null;
       try {
         for (const log of publishReceipt.logs) {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (event.eventName === 'ArticleSubmitted') { blockchainId = event.args.articleId.toString(); break; }
         }
       } catch {}
@@ -552,14 +552,15 @@ export default function ComparatorPage() {
             {/* On-chain publishing */}
             <div className="bg-[#121214] border border-[#27272a] rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
+                {/* ✅ NEW */}
                 <h3 className="font-bold text-white mb-1 flex items-center gap-2">
                   <Hexagon className="w-4 h-4 text-[#10b981]" />
-                  {comparison.onChain ? 'Published on Arbitrum' : 'Publish to Blockchain'}
+                  {comparison.onChain ? 'Published On-Chain' : 'Publish to Blockchain'}
                 </h3>
                 <p className="text-zinc-500 text-sm">
                   {comparison.onChain
                     ? `On-chain ID: #${comparison.blockchainId} | IPFS: ${comparison.ipfsHash?.substring(0, 16)}...`
-                    : 'Store this comparison permanently on Arbitrum via IPFS.'}
+                    : 'Store this comparison permanently on the blockchain via IPFS.'}
                 </p>
               </div>
               {!comparison.onChain && (
@@ -589,7 +590,7 @@ export default function ComparatorPage() {
             {[
               { icon: Link2, title: 'Paste URLs', desc: 'Drop any two article links — news, blogs, research papers, opinion pieces.' },
               { icon: Scale, title: 'AI Analysis', desc: 'Our AI scrapes both articles and scores them across 8 critical dimensions.' },
-              { icon: Hexagon, title: 'Mint Report', desc: 'Store the comparison permanently on Arbitrum. Verifiable forever.' },
+              { icon: Hexagon, title: 'Mint Report', desc: 'Store the comparison permanently on the blockchain. Verifiable forever.' },
             ].map((step, i) => (
               <div key={i} className="bg-[#121214] border border-[#27272a] hover:border-[#10b981] rounded-xl p-6 transition-all group">
                 <div className="w-12 h-12 bg-[#18181b] border border-[#27272a] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">

@@ -4,8 +4,10 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useArticleStore } from "../stores/articleStore";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from "wagmi";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, activeChain } from "../wagmiConfig";
+import { useAccount, useReadContract, useDisconnect, useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from "wagmi";
+import { 
+  WRAPUP_ABI, CONTRACT_ADDRESSES, WUP_TOKEN_ABI, WUPToken_ADDRESSES, WUP_CLAIMER_ABI, WUPClaimer_ADDRESSES,
+} from "../wagmiConfig";
 import { decodeEventLog } from "viem";
 import axios from "axios";
 import { Search, X, Link2, BookOpen, Zap, Link as LinkIcon, Save, Layers, ArrowRight, ArrowLeft } from "lucide-react";
@@ -21,7 +23,15 @@ export default function LegacyLandingPage() {
   const [submittedIpfsHash, setSubmittedIpfsHash] = useState(null);
   
   const navigate = useNavigate();
-  const { isConnected, address, chainId } = useAccount();
+  const { isConnected, address } = useAccount();
+  const chainId = useChainId(); // <--- ADD THIS
+
+  // Dynamically select the correct addresses based on the connected chain
+  // Fallback to a default chain ID (e.g., Arbitrum Sepolia 421614) if undefined
+  const currentContractAddress = CONTRACT_ADDRESSES[chainId] || CONTRACT_ADDRESSES[421614];
+  const currentTokenAddress = WUPToken_ADDRESSES[chainId] || WUPToken_ADDRESSES[421614];
+  const currentClaimerAddress = WUPClaimer_ADDRESSES[chainId] || WUPClaimer_ADDRESSES[421614];
+  
   const { switchChain } = useSwitchChain();
   const { markArticleOnChainDB } = useArticleStore();
   
@@ -61,14 +71,26 @@ export default function LegacyLandingPage() {
       toast.loading('Sign transaction in wallet...', { id: loadingToast });
       setCuratingStep('signing');
       const submitToContract = () => {
-        writeContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI, functionName: 'submitArticle', args: [ipfsHash] });
+        writeContract({ address: currentContractAddress, abi: WRAPUP_ABI, functionName: 'submitArticle', args: [ipfsHash] });
       };
-      if (chainId !== activeChain.id) {
-        switchChain({ chainId: activeChain.id }, {
+
+      // --- MULTI-CHAIN FIX STARTS HERE ---
+      // Check if the current chain is in our list of supported addresses
+      const isSupportedChain = !!CONTRACT_ADDRESSES[chainId];
+
+      if (!isSupportedChain) {
+        // If they are on an unsupported network, switch them to a default one (e.g., Arbitrum Sepolia: 421614)
+        switchChain({ chainId: 421614 }, {
           onSuccess: () => submitToContract(),
           onError: () => { toast.error("Network switch failed", { id: loadingToast }); setLoading(false); }
         });
-      } else { submitToContract(); }
+      } else { 
+        // If they are on any supported chain, just submit!
+        submitToContract(); 
+      }
+      // --- MULTI-CHAIN FIX ENDS HERE ---
+
+
     } catch (err) {
       setError(err.message); setCuratingStep('scraped');
       toast.error(err.message || 'Submission failed', { id: loadingToast });
@@ -77,14 +99,14 @@ export default function LegacyLandingPage() {
   };
 
   useEffect(() => {
-    if (isConfirming) { setCuratingStep('confirming'); toast.loading('Confirming on Arbitrum...', { id: "loadingToast" }); }
+    if (isConfirming) { setCuratingStep('confirming'); toast.loading('Confirming on Blockchain...', { id: "loadingToast" }); }
     if (isConfirmed && receipt) {
       setCuratingStep('done');
       toast.success('Curated on-chain!', { id: "loadingToast" });
       let articleId = null;
       try {
         for (const log of receipt.logs) {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (event.eventName === 'ArticleSubmitted') { articleId = event.args.articleId.toString(); break; }
         }
       } catch (err) { console.error("Log parse error:", err); }
@@ -137,7 +159,7 @@ export default function LegacyLandingPage() {
                 Wrap-Up any <span className="text-[#10b981]">Article.</span>
             </h1>
             <p className="text-zinc-500 text-xl max-w-2xl mx-auto leading-relaxed">
-                Traditional link-based curation. Scrape, analyze, and mint articles to the Arbitrum blockchain.
+                Traditional link-based curation. Scrape, analyze, and mint articles to the blockchain.
             </p>
         </div>
 

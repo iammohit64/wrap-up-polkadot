@@ -105,7 +105,11 @@ export default function ResearchLandingPage() {
             Identify consensus, contradictions, and insights in seconds.
           </p>
         </div>
-
+        {/* --- ADD THESE LINES HERE --- */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <w3m-button />
+          <w3m-network-button />
+        </div>
         {/* Main Input Section */}
         <div className="w-full max-w-3xl mx-auto mb-16">
           <form 

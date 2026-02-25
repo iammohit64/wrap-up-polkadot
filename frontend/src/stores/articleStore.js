@@ -15,7 +15,7 @@ export const useArticleStore = create((set, get) => ({
   setUserPoints: (points) => set({ userPoints: points }),
   setDisplayName: (name) => set({ displayName: name }),
   
-  // 3. ARTICLE API FUNCTIONS (Existing - unchanged)
+  // 3. ARTICLE API FUNCTIONS (Existing - unchanged
   
   // Load ALL articles (on-chain and pending)
   loadAllArticles: async () => {

@@ -74,7 +74,7 @@ export default function CuratedArticlesPage() {
                 <BookOpen className="w-5 h-5 text-[#10b981]" /> All Entries
              </div>
              <button 
-                onClick={() => navigate('/curate')}
+                onClick={() => navigate('/legacy')}
                 className="bg-white text-black px-5 py-2 rounded text-sm font-bold uppercase hover:bg-[#10b981] transition-colors"
              >
                 + Submit Article

@@ -12,9 +12,9 @@ import toast from "react-hot-toast";
 import { useArticleStore } from "../stores/articleStore";
 import { 
   useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, 
-  useSwitchChain, useWatchContractEvent 
+  useSwitchChain, useWatchContractEvent, useDisconnect, useChainId
 } from "wagmi";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, activeChain } from "../wagmiConfig";
+import { WRAPUP_ABI, CONTRACT_ADDRESSES, WUP_TOKEN_ABI, WUPToken_ADDRESSES, WUP_CLAIMER_ABI, WUPClaimer_ADDRESSES } from "../wagmiConfig";
 import { decodeEventLog } from "viem";
 import { 
   Download, ExternalLink, AlertCircle, TrendingUp, MessageSquare, 
@@ -56,7 +56,15 @@ export default function ResearchReportPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [uploadingToChain, setUploadingToChain] = useState(false);
 
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId(); // <--- ADD THIS
+
+  // Dynamically select the correct addresses based on the connected chain
+  // Fallback to a default chain ID (e.g., Arbitrum Sepolia 421614) if undefined
+  const currentContractAddress = CONTRACT_ADDRESSES[chainId] || CONTRACT_ADDRESSES[421614];
+  const currentTokenAddress = WUPToken_ADDRESSES[chainId] || WUPToken_ADDRESSES[421614];
+  const currentClaimerAddress = WUPClaimer_ADDRESSES[chainId] || WUPClaimer_ADDRESSES[421614];
+
   const { switchChain } = useSwitchChain();
   
   const { 
@@ -93,16 +101,16 @@ export default function ResearchReportPage() {
   const { isLoading: isPublishConfirming, isSuccess: isPublishConfirmed, data: publishReceipt } = useWaitForTransactionReceipt({ hash: publishHash });
 
   const { data: hasUpvotedResearch, refetch: refetchHasUpvotedResearch } = useReadContract({
-    abi: CONTRACT_ABI,
-    address: CONTRACT_ADDRESS,
+    abi: WRAPUP_ABI,
+    address: currentContractAddress,
     functionName: 'hasUserUpvotedArticle',
     args: [address, research?.blockchainId],
     enabled: isConnected && !!research?.blockchainId && research?.onChain
   });
 
   const { data: userDisplayName } = useReadContract({
-    abi: CONTRACT_ABI,
-    address: CONTRACT_ADDRESS,
+    abi: WRAPUP_ABI,
+    address: currentContractAddress,
     functionName: 'getDisplayName',
     args: [address],
     enabled: isConnected && !!address
@@ -116,14 +124,14 @@ export default function ResearchReportPage() {
 
   // Watch for new comments
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
+    address: currentContractAddress,
+    abi: WRAPUP_ABI,
     eventName: 'CommentPosted',
     enabled: !!research?.blockchainId && research?.onChain,
     onLogs(logs) {
       for (const log of logs) {
         try {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (research?.blockchainId && event.args.articleId === BigInt(research.blockchainId)) {
             fetchResearch();
             toast.success("New comment detected!");
@@ -136,18 +144,27 @@ export default function ResearchReportPage() {
   });
 
   const callContract = (writeFn, config, toastId) => {
-    if (chainId !== activeChain.id) {
-      toast.loading("Switching to Arbitrum Testnet...", { id: toastId });
-      switchChain({ chainId: activeChain.id }, {
+    // Check if the current chain is supported (i.e., we have a contract address for it)
+    const isSupportedChain = !!CONTRACT_ADDRESSES[chainId];
+
+    if (!isSupportedChain) {
+      toast.loading("Switching to supported network...", { id: toastId });
+      // Fallback to your primary chain ID (e.g., Arbitrum Sepolia 421614)
+      switchChain({ chainId: 421614 }, {
         onSuccess: () => {
           toast.loading('Please confirm in wallet...', { id: toastId });
-          writeFn(config);
+          // Note: Because state updates async, the immediate writeFn might still 
+          // use the old config address. It's safer to let Wagmi handle the switch, 
+          // or re-fetch the correct address for 421614 here.
+          const updatedConfig = { ...config, address: CONTRACT_ADDRESSES[421614] };
+          writeFn(updatedConfig);
         },
         onError: () => {
           toast.error("Network switch failed", { id: toastId });
         }
       });
     } else {
+      // User is on a valid chain (Arbitrum, Base, etc.), proceed normally
       writeFn(config);
     }
   };
@@ -174,8 +191,8 @@ export default function ResearchReportPage() {
       toast.loading("Sign transaction in wallet...", { id: toastId });
       
       callContract(writePublish, {
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
+        address: currentContractAddress,
+        abi: WRAPUP_ABI,
         functionName: 'submitArticle',
         args: [ipfsHash]
       }, toastId);
@@ -197,7 +214,7 @@ export default function ResearchReportPage() {
       let blockchainId = null;
       try {
         for (const log of publishReceipt.logs) {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (event.eventName === 'ArticleSubmitted') {
             blockchainId = event.args.articleId.toString();
             break;
@@ -243,8 +260,8 @@ export default function ResearchReportPage() {
     setHasUpvotedResearchLocal(true);
 
     callContract(writeVote, {
-      address: CONTRACT_ADDRESS,
-      abi: CONTRACT_ABI,
+      address: currentContractAddress,
+      abi: WRAPUP_ABI,
       functionName: 'upvoteArticle',
       args: [research.blockchainId]
     }, toastId);
@@ -257,7 +274,7 @@ export default function ResearchReportPage() {
       let upvotes = 0;
       try {
         for (const log of voteReceipt.logs) {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (event.eventName === 'ArticleUpvoted') {
             upvotes = Number(event.args.newUpvoteCount);
             break;
@@ -323,8 +340,8 @@ export default function ResearchReportPage() {
       toast.loading('Please confirm in wallet...', { id: toastId });
 
       callContract(writeComment, {
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
+        address: currentContractAddress,
+        abi: WRAPUP_ABI,
         functionName: 'postComment',
         args: [onChainResearchId, ipfsHash]
       }, toastId);
@@ -342,7 +359,7 @@ export default function ResearchReportPage() {
       let onChainCommentId = null;
       try {
         for (const log of commentReceipt.logs) {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (event.eventName === 'CommentPosted') {
             onChainCommentId = event.args.commentId.toString();
             break;
@@ -385,8 +402,8 @@ export default function ResearchReportPage() {
     const toastId = toast.loading('Upvoting comment...');
 
     callContract(writeVote, {
-      address: CONTRACT_ADDRESS,
-      abi: CONTRACT_ABI,
+      address: currentContractAddress,
+      abi: WRAPUP_ABI,
       functionName: 'upvoteComment',
       args: [comment.commentId]
     }, toastId);

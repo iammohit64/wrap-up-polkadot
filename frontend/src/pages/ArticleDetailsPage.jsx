@@ -5,9 +5,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useArticleStore } from "../stores/articleStore";
 import toast from "react-hot-toast";
 import { 
-  useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, useWatchContractEvent
+  useAccount, useReadContract, useDisconnect, useWriteContract, 
+  useWaitForTransactionReceipt, useChainId, useSwitchChain, useWatchContractEvent 
 } from "wagmi";
-import { CONTRACT_ABI, CONTRACT_ADDRESS, activeChain } from "../wagmiConfig";
+import { 
+  WRAPUP_ABI, CONTRACT_ADDRESSES, 
+  WUP_TOKEN_ABI, WUPToken_ADDRESSES, 
+  WUP_CLAIMER_ABI, WUPClaimer_ADDRESSES,
+} from "../wagmiConfig";
 import { decodeEventLog } from "viem";
 import { ThumbsUp, MessageSquare, ArrowLeft, ExternalLink, FileText, Newspaper, Key, BarChart2, X, Clock, Hexagon } from "lucide-react";
 
@@ -30,7 +35,14 @@ export default function ArticleDetailPage() {
   const [hasUpvotedArticleLocal, setHasUpvotedArticleLocal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId(); 
+
+  // Dynamically select the correct addresses
+  const currentContractAddress = CONTRACT_ADDRESSES[chainId] || CONTRACT_ADDRESSES[421614];
+  const currentTokenAddress = WUPToken_ADDRESSES[chainId] || WUPToken_ADDRESSES[421614];
+  const currentClaimerAddress = WUPClaimer_ADDRESSES[chainId] || WUPClaimer_ADDRESSES[421614];
+  
   const { switchChain } = useSwitchChain();
 
   useEffect(() => {
@@ -38,14 +50,14 @@ export default function ArticleDetailPage() {
   }, [storeArticle, isRefreshing]);
 
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
+    address: currentContractAddress,
+    abi: WRAPUP_ABI,
     eventName: 'CommentPosted',
     enabled: !!article?.articleId, 
     onLogs(logs) {
       for (const log of logs) {
         try {
-          const event = decodeEventLog({ abi: CONTRACT_ABI, data: log.data, topics: log.topics });
+          const event = decodeEventLog({ abi: WRAPUP_ABI, data: log.data, topics: log.topics });
           if (article?.articleId && event.args.articleId === BigInt(article.articleId)) {
             loadArticle(id); 
             toast.success("New comment detected!");
@@ -61,16 +73,16 @@ export default function ArticleDetailPage() {
   const { isLoading: isCommentConfirming, isSuccess: isCommentConfirmed, data: commentReceipt } = useWaitForTransactionReceipt({ hash: commentHash });
 
   const { data: hasUpvotedArticle, refetch: refetchHasUpvotedArticle } = useReadContract({
-    abi: CONTRACT_ABI,
-    address: CONTRACT_ADDRESS,
+    abi: WRAPUP_ABI,
+    address: currentContractAddress,
     functionName: 'hasUserUpvotedArticle',
     args: [address, article?.articleId],
     enabled: isConnected && !!article?.articleId,
   });
 
   const { data: userDisplayName } = useReadContract({
-    abi: CONTRACT_ABI,
-    address: CONTRACT_ADDRESS,
+    abi: WRAPUP_ABI,
+    address: currentContractAddress,
     functionName: 'getDisplayName',
     args: [address],
     enabled: isConnected && !!address,
@@ -98,18 +110,23 @@ export default function ArticleDetailPage() {
   const canUpvoteArticle = isConnected && !isCurator && !hasUpvotedArticleLocal;
 
   const callContract = (writeFn, config, toastId) => {
-    if (chainId !== activeChain.id) {
-      toast.loading("Switching to Arbitrum Testnet...", { id: toastId });
-      switchChain({ chainId: activeChain.id }, {
+    // Check if the user is on a supported chain (one that exists in our CONTRACT_ADDRESSES mapping)
+    const isSupportedChain = !!CONTRACT_ADDRESSES[chainId];
+
+    if (!isSupportedChain) {
+      toast.loading("Switching to a supported network...", { id: toastId });
+      // Fallback to Arbitrum Sepolia (421614) if they are on an unsupported network like ETH Mainnet
+      switchChain({ chainId: 421614 }, {
         onSuccess: () => {
           toast.loading('Please confirm in wallet...', { id: toastId });
           writeFn(config);
         },
         onError: (err) => {
-          toast.error("Network switch failed", { id: toastId });
+          toast.error("Network switch failed. Please switch manually.", { id: toastId });
         }
       });
     } else {
+      // They are already on a supported network (Anvil, Base, or Arb), so just execute the transaction!
       writeFn(config);
     }
   };
@@ -125,8 +142,8 @@ export default function ArticleDetailPage() {
     setArticle(prev => ({ ...prev, upvotes: prev.upvotes + 1 }));
     setHasUpvotedArticleLocal(true);
     callContract(writeVote, {
-      address: CONTRACT_ADDRESS,
-      abi: CONTRACT_ABI,
+      address: currentContractAddress,
+      abi: WRAPUP_ABI,
       functionName: 'upvoteArticle',
       args: [article.articleId],
     }, toastId);
@@ -163,8 +180,8 @@ export default function ArticleDetailPage() {
       setCommentText("");
       toast.loading('Please confirm in wallet...', { id: toastId });
       callContract(writeComment, {
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
+        address: currentContractAddress,
+        abi: WRAPUP_ABI,
         functionName: 'postComment',
         args: [onChainArticleId, ipfsHash],
       }, toastId);
@@ -193,8 +210,8 @@ export default function ArticleDetailPage() {
       setReplyingTo(null);
       toast.loading('Please confirm in wallet...', { id: toastId });
       callContract(writeComment, {
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
+        address: currentContractAddress,
+        abi: WRAPUP_ABI,
         functionName: 'postComment',
         args: [onChainArticleId, ipfsHash],
       }, toastId);
@@ -212,8 +229,8 @@ export default function ArticleDetailPage() {
     if (!comment.commentId) { toast.error("Comment not on-chain yet"); return; }
     const toastId = toast.loading('Upvoting comment...');
     callContract(writeVote, {
-      address: CONTRACT_ADDRESS,
-      abi: CONTRACT_ABI,
+      address: currentContractAddress,
+      abi: WRAPUP_ABI,
       functionName: 'upvoteComment',
       args: [comment.commentId],
     }, toastId);

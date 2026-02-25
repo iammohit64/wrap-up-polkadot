@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useArticleStore } from "../stores/articleStore";
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { useAccount, useReadContract, useDisconnect, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useReadContract, useDisconnect, useWriteContract, useWaitForTransactionReceipt, useChainId } from "wagmi";
 import { 
-  CONTRACT_ABI, CONTRACT_ADDRESS, MFD_TOKEN_ABI, MFD_TOKEN_ADDRESS, MFD_CLAIMER_ABI, MFD_CLAIMER_ADDRESS,
+  WUP_CLAIMER_ABI, CONTRACT_ADDRESSES, WRAPUP_ABI, WUPToken_ADDRESSES, WUP_TOKEN_ABI, WUPClaimer_ADDRESSES,
 } from "../wagmiConfig";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -26,39 +26,50 @@ export default function Navbar() {
    
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const chainId = useChainId(); // <--- ADD THIS
+
+  // Dynamically select the correct addresses based on the connected chain
+  // Fallback to a default chain ID (e.g., Arbitrum Sepolia 421614) if undefined
+  const currentContractAddress = CONTRACT_ADDRESSES[chainId] || CONTRACT_ADDRESSES[421614];
+  const currentTokenAddress = WUPToken_ADDRESSES[chainId] || WUPToken_ADDRESSES[421614];
+  const currentClaimerAddress = WUPClaimer_ADDRESSES[chainId] || WUPClaimer_ADDRESSES[421614];
   const { open } = useWeb3Modal();
 
   const { data: pointsData, refetch: refetchPoints } = useReadContract({
-    abi: CONTRACT_ABI,
-    address: CONTRACT_ADDRESS,
+    abi: WRAPUP_ABI,
+    address: currentContractAddress,
     functionName: 'getUserPoints',
     args: [address],
     enabled: isConnected && !!address,
   });
 
   const { data: nameData, refetch: refetchName } = useReadContract({
-    abi: CONTRACT_ABI,
-    address: CONTRACT_ADDRESS,
+    abi: WRAPUP_ABI,
+    address: currentContractAddress,
     functionName: 'getDisplayName',
     args: [address],
     enabled: isConnected && !!address,
   });
 
-  const { data: mfdBalance, refetch: refetchMfdBalance } = useReadContract({
-    address: MFD_TOKEN_ADDRESS,
-    abi: MFD_TOKEN_ABI,
+  const { data: wupBalance, refetch: refetchWupBalance } = useReadContract({
+    address: currentTokenAddress,
+    abi: WUP_TOKEN_ABI,
     functionName: 'balanceOf',
     args: [address],
-    enabled: isConnected && !!address,
+    enabled: isConnected && !!address && !!currentTokenAddress,  
   });
 
-  const { data: hasClaimed, refetch: refetchHasClaimed } = useReadContract({
-    address: MFD_CLAIMER_ADDRESS,
-    abi: MFD_CLAIMER_ABI,
-    functionName: 'hasClaimed',
+  // NEW: Read how many points the user has already claimed
+  const { data: claimedPointsData, refetch: refetchClaimedPoints } = useReadContract({
+    address: currentClaimerAddress,
+    abi: WUP_CLAIMER_ABI, // (Make sure this matches whatever you exported from wagmiConfig)
+    functionName: 'claimedPoints',
     args: [address],
     enabled: isConnected && !!address,
   });
+  
+  // Calculate how many points they can currently claim
+  const claimablePoints = (userPoints || 0) - (Number(claimedPointsData) || 0);
 
   const { data: hash, isPending, writeContract, error: writeError, isError: isWriteError } = useWriteContract();
 
@@ -82,14 +93,14 @@ export default function Navbar() {
     if (isConnected && address) {
       refetchPoints();
       refetchName();
-      refetchMfdBalance();
-      refetchHasClaimed();
+      refetchWupBalance();
+      refetchClaimedPoints();
       fetchUserFromDb(address);
     } else {
       setUserPoints(0);
       setDisplayName('');
     }
-  }, [isConnected, address, refetchPoints, refetchName, refetchMfdBalance, refetchHasClaimed, setUserPoints, setDisplayName]);
+  }, [isConnected, address, refetchPoints, refetchName, refetchWupBalance, refetchClaimedPoints, setUserPoints, setDisplayName]);
 
   useEffect(() => {
     if (pointsData !== undefined) {
@@ -156,18 +167,21 @@ export default function Navbar() {
   }, [isPending, isConfirming, isConfirmed, newName, address, setDisplayName, refetchName, isWriteError, writeError, isReceiptError, receiptError]);
 
   const handleClaim = async () => {
-    if (!userPoints || userPoints === 0) {
+
+    if (!currentClaimerAddress) {
+    toast.error('Claiming is not supported on this network!');
+    return;
+  }
+    if (claimablePoints <= 0) {
       toast.error('You have no points to claim!');
       return;
     }
-    if (hasClaimed) {
-      toast.error('You have already claimed your tokens!');
-      return;
-    }
+    
     toast.loading('Confirm in your wallet...', { id: 'claim_toast' });
+
     claimRewards({
-      address: MFD_CLAIMER_ADDRESS,
-      abi: MFD_CLAIMER_ABI,
+      address: currentClaimerAddress,
+      abi: WUP_CLAIMER_ABI,
       functionName: 'claimReward',
       args: [],
     });
@@ -177,12 +191,11 @@ export default function Navbar() {
     if (isConfirmingClaim) toast.loading('Claiming tokens...', { id: 'claim_toast' });
     if (isClaimConfirmed) {
       toast.success('Tokens Claimed!', { id: 'claim_toast' });
-      refetchMfdBalance();
-      refetchHasClaimed();
+      refetchWupBalance();
+      refetchClaimedPoints();
       refetchPoints();
     }
-  }, [isConfirmingClaim, isClaimConfirmed, refetchMfdBalance, refetchHasClaimed, refetchPoints]);
-
+  }, [isConfirmingClaim, isClaimConfirmed, refetchWupBalance, refetchClaimedPoints, refetchPoints]);
   const handleWalletAction = () => {
     if (isConnected) disconnect();
     else open(); 
@@ -198,21 +211,21 @@ export default function Navbar() {
       return;
     }
     writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: CONTRACT_ABI,
+      address: currentContractAddress,
+      abi: WRAPUP_ABI,
       functionName: 'setDisplayName',
       args: [newName.trim()],
     });
   };
 
-  const isClaimButtonDisabled = isClaiming || isConfirmingClaim || hasClaimed || !userPoints || userPoints === 0;
+  // NEW: Disable button if they have no NEW points to claim
+  const isClaimButtonDisabled = isClaiming || isConfirmingClaim || claimablePoints <= 0;
    
   const claimButtonText = () => {
     if (isClaiming) return 'Check Wallet...';
     if (isConfirmingClaim) return 'Confirming...';
-    if (hasClaimed) return 'Claimed';
-    if (!userPoints || userPoints === 0) return 'No Points';
-    return 'Claim $MFD';
+    if (claimablePoints <= 0) return 'No Points';
+    return 'Claim $WUP'; // Changed to WUP
   };
 
   return (
@@ -271,7 +284,7 @@ export default function Navbar() {
                   <div className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-[#10b981]" />
                     <span className="text-white text-sm font-bold">
-                        {mfdBalance !== undefined ? (Number(mfdBalance) / 1e18).toFixed(2) : '0.00'}
+                        {wupBalance !== undefined ? (Number(wupBalance) / 1e18).toFixed(2) : '0.00'}
                     </span>
                   </div>
                 </div>
@@ -315,6 +328,8 @@ export default function Navbar() {
                 )}
               </div>
             )}
+            {/* Add the network switcher here so it only shows when connected */}
+            {isConnected && <w3m-network-button />}
             
             <button
               onClick={handleWalletAction}
@@ -366,9 +381,9 @@ export default function Navbar() {
                         <span className="text-[#10b981] font-bold">{userPoints}</span>
                     </div>
                     <div className="bg-[#121214] p-3 rounded-lg border border-[#27272a] flex items-center justify-between">
-                        <span className="text-zinc-500 text-xs uppercase">$MFD</span>
+                        <span className="text-zinc-500 text-xs uppercase">$WUP</span>
                         <span className="text-[#10b981] font-bold">
-                            {mfdBalance !== undefined ? (Number(mfdBalance) / 1e18).toFixed(2) : '0.00'}
+                            {wupBalance !== undefined ? (Number(wupBalance) / 1e18).toFixed(2) : '0.00'}
                         </span>
                     </div>
                 </div>
