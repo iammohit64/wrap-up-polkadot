@@ -19,7 +19,7 @@ import {
   ArrowRight, Hexagon, BarChart3, Circle,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "/api";
 
 const DIMENSION_META = {
   credibility:    { label: "Credibility",     icon: Shield,      color: "#10b981" },

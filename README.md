@@ -373,7 +373,7 @@ VITE_WALLETCONNECT_PROJECT_ID=your_walletconnect_id
 
 #### Backend (.env)
 ```bash
-PORT=5000
+PORT=5001
 DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/wrapup"
 
 # AI Services
@@ -430,7 +430,7 @@ npx prisma db push
 npm run dev
 ```
 
-Backend runs at: `http://localhost:5000`
+Backend runs at: `http://localhost:5001`
 
 #### 4. Smart Contracts Setup
 ```bash
@@ -471,7 +471,7 @@ VITE_MFD_CLAIMER_ADDRESS=0x0b8Fe0D4e677E6a99b2B47b2F34A0e0D85240C24
 ### Verification
 
 1. **Frontend**: Navigate to `http://localhost:5173` - should see landing page
-2. **Backend**: Visit `http://localhost:5000/health` - should return `{"status": "OK"}`
+2. **Backend**: Visit `http://localhost:5001/health` - should return `{"status": "OK"}`
 3. **Contracts**: Check contract on [Arbitrum Sepolia Explorer](https://sepolia.arbiscan.io)
 
 ---

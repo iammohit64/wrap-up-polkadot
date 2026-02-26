@@ -24,7 +24,7 @@ import {
   FileText, ThumbsUp, Hexagon, Link2, Loader, Circle,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "/api";
 
 const SENTIMENT_COLORS = {
   Positive: "#10b981",

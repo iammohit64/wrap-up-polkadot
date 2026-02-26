@@ -13,7 +13,7 @@ import {
   Brain, FileText, LogOut, Wallet
 } from "lucide-react";
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = '/api';
 
 export default function Navbar() {
   const { userPoints, displayName, setUserPoints, setDisplayName } = useArticleStore();
@@ -144,27 +144,22 @@ export default function Navbar() {
     }
   };
 
+  // Watch for blockchain transaction status
   useEffect(() => {
-    const handleTransactionFlow = async () => {
-      if (isPending) toast.loading("Confirm transaction in wallet...", { id: "setNameToast" });
-      if (isConfirming) toast.loading("Setting name on blockchain...", { id: "setNameToast" });
-      if (isConfirmed) {
-        toast.loading("Saving to database...", { id: "setNameToast" });
-        const dbSaved = await saveDisplayNameToDb(newName, address);
-        if (dbSaved) {
-          toast.success("Name saved successfully!", { id: "setNameToast" });
-          setDisplayName(newName);
-          setNewName("");
-          refetchName();
-        }
-      }
-      if (isWriteError || isReceiptError) {
-        const errorMsg = writeError?.shortMessage || receiptError?.shortMessage || "Transaction failed";
-        toast.error(`Error: ${errorMsg}`, { id: "setNameToast" });
-      }
-    };
-    handleTransactionFlow();
-  }, [isPending, isConfirming, isConfirmed, newName, address, setDisplayName, refetchName, isWriteError, writeError, isReceiptError, receiptError]);
+    if (isConfirming) {
+      toast.loading("Setting name on blockchain...", { id: "setNameToast" });
+    }
+    if (isConfirmed) {
+      toast.success("Name saved on blockchain successfully!", { id: "setNameToast" });
+      setDisplayName(newName);
+      setNewName("");
+      refetchName();
+    }
+    if (isWriteError || isReceiptError) {
+      const errorMsg = writeError?.shortMessage || receiptError?.shortMessage || "Transaction failed";
+      toast.error(`Blockchain Error: ${errorMsg}`, { id: "setNameToast" });
+    }
+  }, [isConfirming, isConfirmed, isWriteError, writeError, isReceiptError, receiptError]);
 
   const handleClaim = async () => {
 
@@ -210,6 +205,18 @@ export default function Navbar() {
       toast.error("Name must be 1-32 characters");
       return;
     }
+
+    // 1. Save to Database First
+    toast.loading("Saving to database...", { id: "setNameToast" });
+    const dbSaved = await saveDisplayNameToDb(newName.trim(), address);
+
+    if (!dbSaved) {
+      toast.error("Failed to save to database. Transaction aborted.", { id: "setNameToast" });
+      return;
+    }
+
+    // 2. If DB is successful, trigger Blockchain Transaction
+    toast.loading("Database updated! Confirm in wallet...", { id: "setNameToast" });
     writeContract({
       address: currentContractAddress,
       abi: WRAPUP_ABI,

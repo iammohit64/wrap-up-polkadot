@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { Brain, Calendar, User, ThumbsUp, MessageSquare, Hexagon, TrendingUp } from "lucide-react";
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = '/api';
 
 export default function AllResearchPage() {
   const [research, setResearch] = useState([]);

@@ -9,7 +9,7 @@ import {
   Globe, Zap, Shield, Link2, Scale
 } from "lucide-react";
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = '/api';
 
 export default function ResearchLandingPage() {
   const [topic, setTopic] = useState("");

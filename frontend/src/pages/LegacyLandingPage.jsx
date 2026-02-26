@@ -27,7 +27,7 @@ import {
   Loader,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "/api";
 
 // Step indicator component
 function StepIndicator({ steps, currentStep }) {
