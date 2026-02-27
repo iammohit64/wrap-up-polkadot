@@ -4,6 +4,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Card } from "../components/ui";
 import Button from "../components/ui/Button";
+import Model3D from "../components/Model3D";
+import BlockchainBackground from "../components/ui/BlockchainBackground";
 import {
   Brain, Search, Scale, Link2, Zap, Shield, Globe, 
   ArrowRight, CheckCircle, Hexagon, BarChart3, 
@@ -88,62 +90,57 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
-      {/* Background Effects */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* Top gradient */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-gradient-radial from-emerald-500/8 via-transparent to-transparent rounded-full blur-3xl" />
-        {/* Grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }}
-        />
+    <div className="min-h-screen bg-zinc-950 text-white font-sans flex flex-col relative">
+      
+      {/* Universal Interactive Network Background */}
+      <BlockchainBackground />
+
+      {/* Additional localized hero gradients */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden mix-blend-screen">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-radial from-emerald-500/10 via-transparent to-transparent rounded-full blur-[100px]" />
       </div>
 
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-20 pb-32">
+      <section className="relative z-10 pt-20 pb-32 flex-grow">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[70vh]">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
+            
             {/* Left Column - Content */}
-            <div>
-              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-full mb-8">
+            <div className="relative z-20">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-full mb-8 shadow-inner">
                 <Sparkles className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-semibold text-emerald-400">
+                <span className="text-sm font-bold tracking-wide text-emerald-400 uppercase">
                   Web3 AI-Powered Curation Platform
                 </span>
               </div>
 
-              <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.01]">
+              <h1 className="hero-title text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8">
                 <span className="block type-line line-1">
-                    Decentralized
+                  Decentralized
                 </span>
-
-                <span className="block text-emerald-400 type-line line-2">
-                    Intelligence
+                <span className="block text-emerald-400 type-line line-2 drop-shadow-lg">
+                  Intelligence
                 </span>
-
-                <span className="block type-line line-3 cursor-line">
-                    Layer.
+                <span className="block type-line line-3">
+                  Layer.
                 </span>
               </h1>
 
-              <p className="text-xl text-zinc-400 leading-relaxed mb-10 max-w-lg">
+              <p className="text-xl text-zinc-400 leading-relaxed mb-10 max-w-lg font-medium">
                 Research, curate, and verify web content with AI-powered analysis. 
                 Store findings immutably on IPFS and blockchain for permanent, 
                 transparent access.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="flex flex-col sm:flex-row gap-5 mb-14">
                 <Button 
                   size="lg" 
                   onClick={() => navigate("/research")}
                   icon={ArrowRight}
                   iconPosition="right"
+                  className="shadow-lg shadow-emerald-500/20 py-4 px-8 text-lg"
                 >
                   Start Researching
                 </Button>
@@ -151,108 +148,76 @@ export default function LandingPage() {
                   variant="outline" 
                   size="lg"
                   onClick={() => navigate("/research-list")}
+                  className="bg-zinc-900/50 backdrop-blur-md border-zinc-800 hover:bg-zinc-800 py-4 px-8 text-lg"
                 >
                   Explore Reports
                 </Button>
               </div>
 
               {/* Trust indicators */}
-              <div className="flex items-center gap-8">
-                <div className="flex items-center gap-2 text-sm text-zinc-500">
-                  <Shield className="w-4 h-4 text-emerald-500" />
+              <div className="flex flex-wrap items-center gap-6 md:gap-8">
+                <div className="flex items-center gap-2 text-sm font-semibold text-zinc-400 bg-zinc-900/50 px-4 py-2 rounded-xl border border-zinc-800/80">
+                  <Shield className="w-4 h-4 text-emerald-400" />
                   <span>Verified On-Chain</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-zinc-500">
-                  <Lock className="w-4 h-4 text-emerald-500" />
+                <div className="flex items-center gap-2 text-sm font-semibold text-zinc-400 bg-zinc-900/50 px-4 py-2 rounded-xl border border-zinc-800/80">
+                  <Lock className="w-4 h-4 text-emerald-400" />
                   <span>IPFS Storage</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-zinc-500">
-                  <Zap className="w-4 h-4 text-emerald-500" />
+                <div className="flex items-center gap-2 text-sm font-semibold text-zinc-400 bg-zinc-900/50 px-4 py-2 rounded-xl border border-zinc-800/80">
+                  <Zap className="w-4 h-4 text-emerald-400" />
                   <span>AI-Powered</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column - 3D Model Placeholder */}
-            <div className="relative hidden lg:block">
-              <div className="relative w-full aspect-square max-w-[600px] mx-auto">
-                {/* Placeholder container for future 3D model */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-zinc-900 via-zinc-900/50 to-transparent border border-zinc-800/50 overflow-hidden">
-                  {/* Animated background elements */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative w-64 h-64">
-                      {/* Orbiting elements */}
-                      <div className="absolute inset-0 rounded-full border border-emerald-500/20 animate-spin-slow" />
-                      <div className="absolute inset-4 rounded-full border border-emerald-500/15 animate-spin-slow-reverse" />
-                      <div className="absolute inset-8 rounded-full border border-emerald-500/10" />
-                      
-                      {/* Center hexagon */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-24 h-24 bg-emerald-500/10 rounded-xl border border-emerald-500/30 flex items-center justify-center backdrop-blur-sm">
-                          <Hexagon className="w-12 h-12 text-emerald-400" />
-                        </div>
-                      </div>
-
-                      {/* Floating elements */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-8 h-8 bg-zinc-800 rounded-lg border border-zinc-700 flex items-center justify-center animate-float">
-                        <Brain className="w-4 h-4 text-emerald-400" />
-                      </div>
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-4 w-8 h-8 bg-zinc-800 rounded-lg border border-zinc-700 flex items-center justify-center animate-float-delayed">
-                        <FileText className="w-4 h-4 text-blue-400" />
-                      </div>
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-8 h-8 bg-zinc-800 rounded-lg border border-zinc-700 flex items-center justify-center animate-float">
-                        <Scale className="w-4 h-4 text-purple-400" />
-                      </div>
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-8 h-8 bg-zinc-800 rounded-lg border border-zinc-700 flex items-center justify-center animate-float-delayed">
-                        <Database className="w-4 h-4 text-amber-400" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
+            {/* Right Column - 3D Model Floating directly on background */}
+            <div className="relative hidden lg:flex items-center justify-center h-full min-h-[500px] z-10 pointer-events-auto">
+                {/* Added -translate-y-16 to shift the model upwards */}
+                <div className="absolute inset-0 w-[130%] h-[130%] -left-[15%] -top-[15%] -translate-y-32">
+                    {/* The model is fully transparent and interactive */}
+                    <Model3D path="/models/network.glb" />
                 </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Platform Pillars */}
-        <section className="relative z-10 py-20 border-y border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm">
-        <div className="w-full px-6 sm:px-10 lg:px-16">
+      <section className="relative z-10 py-20 border-y border-zinc-800/50 bg-zinc-900/20 backdrop-blur-sm">
+        <div className="w-full px-6 sm:px-10 lg:px-16 max-w-screen-2xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {PLATFORM_PILLARS.map((item, idx) => (
                 <div
-                key={idx}
-                className="group text-center p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 hover:border-emerald-500/40 transition-all duration-300"
+                  key={idx}
+                  className="group text-center p-8 rounded-3xl border border-zinc-800/80 bg-zinc-950/50 hover:border-emerald-500/40 hover:bg-zinc-900/80 transition-all duration-300 shadow-xl hover:shadow-[0_0_30px_rgba(16,185,129,0.1)]"
                 >
-                <div className="w-14 h-14 mx-auto mb-5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <item.icon className="w-6 h-6 text-emerald-400" />
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-inner">
+                    <item.icon className="w-8 h-8 text-emerald-400" />
                 </div>
 
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors">
                     {item.title}
                 </h3>
 
-                <p className="text-sm text-zinc-500 leading-relaxed">
+                <p className="text-sm text-zinc-400 leading-relaxed font-medium">
                     {item.description}
                 </p>
                 </div>
             ))}
             </div>
         </div>
-        </section>
+      </section>
 
       {/* Features Section */}
       <section className="relative z-10 py-32" id="features">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
               Three Powerful Tools
             </h2>
-            <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
-              Choose your workflow. Generate research, curate articles, or compare content — all secured on-chain.
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
+              Choose your workflow. Generate research, curate articles, or compare content — all synthesized by AI and secured on-chain.
             </p>
           </div>
 
@@ -261,19 +226,18 @@ export default function LandingPage() {
               <Card
                 key={idx}
                 variant="interactive"
-                padding="lg"
-                className="group relative overflow-hidden"
+                className="group relative overflow-hidden p-10 bg-zinc-900/40 backdrop-blur-md border-zinc-800/80 hover:border-zinc-600 transition-all shadow-xl"
                 onClick={() => navigate(feature.link)}
               >
-                {/* Hover gradient */}
+                {/* Hover gradient bleed */}
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${
-                  feature.color === 'emerald' ? 'from-emerald-500/10' :
-                  feature.color === 'blue' ? 'from-blue-500/10' :
-                  'from-purple-500/10'
+                  feature.color === 'emerald' ? 'from-emerald-500/5' :
+                  feature.color === 'blue' ? 'from-blue-500/5' :
+                  'from-purple-500/5'
                 } to-transparent`} />
                 
-                <div className="relative">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 border ${
+                <div className="relative z-10">
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 transition-all duration-300 border shadow-inner ${
                     feature.color === 'emerald' ? 'bg-emerald-500/10 border-emerald-500/30 group-hover:bg-emerald-500/20' :
                     feature.color === 'blue' ? 'bg-blue-500/10 border-blue-500/30 group-hover:bg-blue-500/20' :
                     'bg-purple-500/10 border-purple-500/30 group-hover:bg-purple-500/20'
@@ -285,14 +249,14 @@ export default function LandingPage() {
                     }`} />
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors">
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-400 transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-zinc-400 leading-relaxed mb-6">
+                  <p className="text-zinc-400 leading-relaxed mb-8 font-medium">
                     {feature.description}
                   </p>
 
-                  <div className="flex items-center gap-2 text-sm font-semibold text-emerald-400 group-hover:gap-3 transition-all">
+                  <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-emerald-400 group-hover:gap-4 transition-all">
                     <span>Get Started</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -304,41 +268,39 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="relative z-10 py-32 bg-zinc-900/30" id="workflow">
+      <section className="relative z-10 py-32 bg-zinc-900/20 border-t border-zinc-800/50 backdrop-blur-sm" id="workflow">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
               How It Works
             </h2>
-            <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
-              Four simple steps from query to permanent on-chain record
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
+              Four simple steps from query to a permanent, verifiable on-chain record.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8 relative">
-            {/* Connecting line */}
-            <div className="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+          <div className="grid md:grid-cols-4 gap-10 relative">
+            {/* Connecting line for desktop */}
+            <div className="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-[2px] bg-gradient-to-r from-emerald-500/10 via-emerald-500/40 to-emerald-500/10" />
 
             {WORKFLOW_STEPS.map((step, idx) => (
-              <div key={idx} className="relative">
+              <div key={idx} className="relative mt-8 md:mt-0">
                 <Card
-                  variant="default"
-                  padding="lg"
-                  className="text-center relative group hover:border-emerald-500/30 transition-all duration-300"
+                  className="text-center relative group p-8 bg-zinc-950/80 backdrop-blur-md border border-zinc-800 hover:border-emerald-500/40 transition-all duration-300 shadow-xl hover:-translate-y-2"
                 >
-                  {/* Step number */}
-                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-black font-bold text-sm border-4 border-[#050505]">
+                  {/* Step Badge */}
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-black font-black text-lg border-4 border-zinc-950 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                     {step.step}
                   </div>
 
-                  <div className="pt-4">
-                    <div className="w-14 h-14 bg-zinc-800 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-emerald-500/10 group-hover:scale-110 transition-all duration-300 border border-zinc-700 group-hover:border-emerald-500/30">
-                      <step.icon className="w-7 h-7 text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+                  <div className="pt-8">
+                    <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-500/10 group-hover:scale-110 transition-all duration-300 border border-zinc-800 group-hover:border-emerald-500/30 shadow-inner">
+                      <step.icon className="w-8 h-8 text-zinc-500 group-hover:text-emerald-400 transition-colors" />
                     </div>
-                    <h3 className="text-lg font-bold text-white mb-2">
+                    <h3 className="text-xl font-bold text-white mb-3">
                       {step.title}
                     </h3>
-                    <p className="text-sm text-zinc-500 leading-relaxed">
+                    <p className="text-sm text-zinc-400 leading-relaxed font-medium">
                       {step.description}
                     </p>
                   </div>
@@ -350,34 +312,35 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+      <section className="relative z-10 py-32 mb-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           <Card 
-            variant="default" 
-            padding="lg"
-            className="text-center bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent border-emerald-500/20"
+            className="text-center bg-zinc-900/40 backdrop-blur-xl border-emerald-500/30 overflow-hidden relative shadow-2xl p-0"
           >
-            <div className="py-8">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-4 py-1.5 rounded-full mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
+            
+            <div className="p-12 md:p-20 relative z-10">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-5 py-2 rounded-full mb-8 shadow-inner">
                 <Zap className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
-                  Get Started Today
+                  Join the Network
                 </span>
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
                 Ready to curate the web?
               </h2>
-              <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
+              <p className="text-zinc-300 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
                 Join the decentralized intelligence layer. Research, verify, and preserve 
-                knowledge on-chain.
+                knowledge immutably on-chain today.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-5 justify-center">
                 <Button 
                   size="lg" 
                   onClick={() => navigate("/research")}
                   icon={Brain}
+                  className="px-8 py-4 shadow-lg shadow-emerald-500/20"
                 >
                   AI Research
                 </Button>
@@ -386,14 +349,16 @@ export default function LandingPage() {
                   size="lg"
                   onClick={() => navigate("/compare")}
                   icon={Scale}
+                  className="px-8 py-4 border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800"
                 >
                   Compare Articles
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   size="lg"
                   onClick={() => navigate("/legacy")}
                   icon={Link2}
+                  className="px-8 py-4 border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800"
                 >
                   Curate URL
                 </Button>
@@ -404,45 +369,6 @@ export default function LandingPage() {
       </section>
 
       <Footer />
-
-      {/* Custom animations */}
-      <style>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spin-slow-reverse {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0) translateX(-50%); }
-          50% { transform: translateY(-10px) translateX(-50%); }
-        }
-        @keyframes float-delayed {
-          0%, 100% { transform: translateY(0) translateX(-50%); }
-          50% { transform: translateY(10px) translateX(-50%); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-spin-slow-reverse {
-          animation: spin-slow-reverse 25s linear infinite;
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        .animate-float-delayed {
-          animation: float-delayed 3.5s ease-in-out infinite;
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }

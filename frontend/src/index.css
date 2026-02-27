@@ -12,9 +12,9 @@
   :root {
     --color-emerald: #10b981;
     --color-emerald-dark: #059669;
-    --color-bg: #050505;
+    --color-bg: #09090b; /* zinc-950 */
     --color-surface: #0a0a0a;
-    --color-border: #1a1a1a;
+    --color-border: #27272a; /* zinc-800 */
   }
 
   html {
@@ -22,7 +22,7 @@
   }
 
   html, body {
-    @apply bg-[#050505] text-zinc-200 antialiased;
+    @apply bg-zinc-950 text-zinc-200 antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -85,7 +85,7 @@
 
   /* Glass Effect */
   .glass {
-    @apply bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50;
+    @apply bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80;
   }
 
   /* Line Clamp Utilities */
@@ -110,10 +110,6 @@
 
   .animate-slide-up {
     animation: slideUp 0.5s ease-out forwards;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s ease-in-out infinite;
   }
 
   /* Hide scrollbar but keep functionality */
@@ -149,61 +145,50 @@
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
+/* ⚡ SMOOTH TYPING ANIMATION — uses clip-path (GPU accelerated, zero layout cost)
+   Replace ALL existing .type-line / .line-1/2/3 / @keyframes blocks
+   =========================================================== */
 
-/* Prevent g / y clipping */
 .hero-title span {
-  padding-bottom: 0.15em;
-}
-
-/* Typing animation */
-@keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
-}
-
-/* Cursor blink */
-@keyframes blink {
-  0%, 100% { border-color: transparent }
-  50% { border-color: #34d399 }
+  /* Expand the bounding box downward so 'y' and 'g' don't get clipped */
+  padding-bottom: 0.3em; 
+  /* Pull the following lines back up to keep your exact original line spacing */
+  margin-bottom: -0.25em; 
+  line-height: 1.05;
 }
 
 .type-line {
   display: inline-block;
   white-space: nowrap;
-  overflow: hidden;
+  vertical-align: bottom;
+  /* Removed the redundant padding-bottom from here since the span rule above handles it */
+  clip-path: inset(0 100% 0 0);
+  will-change: clip-path;
 }
 
-/* ⚡ FAST SEQUENTIAL FLOW */
-
 .line-1 {
-  width: 0;
-  animation: typing 0.45s steps(20, end) forwards;
+  animation: typeReveal 0.7s steps(12, end) 0.2s forwards;
 }
 
 .line-2 {
-  width: 0;
-  animation: typing 0.4s steps(15, end) 0.5s forwards;
+  animation: typeReveal 0.8s steps(13, end) 1.0s forwards;
 }
 
 .line-3 {
-  width: 0;
-  animation: typing 0.35s steps(10, end) 0.95s forwards;
+  animation:
+    typeReveal 0.45s steps(6, end) 1.9s forwards,
+    blinkCursor 0.85s step-end infinite 1.9s;
+  border-right: 3px solid transparent;
 }
 
-/* Cursor ONLY on final word */
-.cursor-line {
-  border-right: 3px solid #34d399;
-  animation:
-    typing 0.35s steps(10, end) 0.95s forwards,
-    blink 0.8s infinite 1.3s;
+@keyframes typeReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+@keyframes blinkCursor {
+  0%, 100% { border-right-color: transparent; }
+  50%       { border-right-color: #10b981; }
 }
 
 /* Recharts custom styles */
