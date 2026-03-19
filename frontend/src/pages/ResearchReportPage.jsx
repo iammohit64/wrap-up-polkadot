@@ -433,7 +433,13 @@ export default function ResearchReportPage() {
     );
   }
 
-  const viz = research.visualizationData;
+  const viz = research.visualizationData || {
+  totalSources: 0,
+  sentimentDistribution: [],
+  platformDistribution: [],
+  credibilityDistribution: [],
+  thematicClusters: [],
+};
   const isPublishInProgress = publishStep >= 0;
 
   return (
