@@ -434,12 +434,12 @@ export default function ResearchReportPage() {
   }
 
   const viz = research.visualizationData || {
-  totalSources: 0,
-  sentimentDistribution: [],
-  platformDistribution: [],
-  credibilityDistribution: [],
-  thematicClusters: [],
-};
+    totalSources: 0,
+    sentimentDistribution: [],
+    platformDistribution: [],
+    credibilityDistribution: [],
+    thematicClusters: [],
+  };
   const isPublishInProgress = publishStep >= 0;
 
   return (
@@ -541,7 +541,7 @@ export default function ResearchReportPage() {
             <h2 className="text-2xl font-bold tracking-tight">Core Synthesis</h2>
           </div>
           <div className="grid gap-4">
-            {research.keyInsights.map((insight, idx) => (
+            {research.keyInsights?.map((insight, idx) => (
               <div key={idx} className="flex gap-5 bg-zinc-950/50 p-5 rounded-2xl border border-zinc-800/50 hover:border-emerald-500/20 transition-colors">
                 <div className="flex-shrink-0 w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 font-bold font-mono shadow-inner">
                   0{idx + 1}
@@ -561,11 +561,11 @@ export default function ResearchReportPage() {
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={viz.sentimentDistribution} cx="50%" cy="50%"
+                  data={viz.sentimentDistribution || []} cx="50%" cy="50%"
                   labelLine={false} label={({ sentiment, percentage }) => `${sentiment}: ${percentage}%`}
                   outerRadius={80} dataKey="count" stroke="none"
                 >
-                  {viz.sentimentDistribution.map((entry, i) => (
+                  {(viz.sentimentDistribution || []).map((entry, i) => (
                     <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || "#6b7280"} />
                   ))}
                 </Pie>
@@ -579,7 +579,7 @@ export default function ResearchReportPage() {
               <Globe className="w-5 h-5 text-emerald-400" /> Platform Spread
             </h3>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={viz.platformDistribution}>
+              <BarChart data={viz.platformDistribution || []}>
                 <XAxis dataKey="platform" stroke="#52525b" tick={{fill: "#a1a1aa", fontSize: 12}} />
                 <YAxis stroke="#52525b" tick={{fill: "#a1a1aa", fontSize: 12}} />
                 <Tooltip cursor={{fill: 'rgba(255,255,255,0.05)'}} contentStyle={{ backgroundColor: "rgba(9,9,11,0.9)", border: "1px solid #27272a", borderRadius: "12px" }} />
@@ -591,7 +591,7 @@ export default function ResearchReportPage() {
           <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 rounded-3xl p-8 shadow-lg">
             <h3 className="text-lg font-bold mb-6 text-zinc-100">Credibility Distribution</h3>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={viz.credibilityDistribution} layout="vertical">
+              <BarChart data={viz.credibilityDistribution || []} layout="vertical">
                 <XAxis type="number" stroke="#52525b" tick={{fill: "#a1a1aa", fontSize: 12}} />
                 <YAxis type="category" dataKey="level" stroke="#52525b" tick={{fill: "#a1a1aa", fontSize: 12}} width={80} />
                 <Tooltip cursor={{fill: 'rgba(255,255,255,0.05)'}} contentStyle={{ backgroundColor: "rgba(9,9,11,0.9)", border: "1px solid #27272a", borderRadius: "12px" }} />
@@ -603,7 +603,7 @@ export default function ResearchReportPage() {
           <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/80 rounded-3xl p-8 shadow-lg">
             <h3 className="text-lg font-bold mb-6 text-zinc-100">Thematic Clusters</h3>
             <ResponsiveContainer width="100%" height={250}>
-              <RadarChart data={viz.thematicClusters} outerRadius={80}>
+              <RadarChart data={viz.thematicClusters || []} outerRadius={80}>
                 <PolarGrid stroke="#27272a" />
                 <PolarAngleAxis dataKey="theme" tick={{ fill: '#a1a1aa', fontSize: 11 }} />
                 <PolarRadiusAxis stroke="#3f3f46" tick={false} axisLine={false} />
@@ -630,7 +630,7 @@ export default function ResearchReportPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50">
-                {research.comparativeAnalysis.comparisonTable.map((row, idx) => (
+                {(research.comparativeAnalysis?.comparisonTable || []).map((row, idx) => (
                   <tr key={idx} className="hover:bg-zinc-900/50 transition-colors">
                     <td className="p-4">
                       <a href={row.url} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-2 text-sm">
@@ -652,18 +652,18 @@ export default function ResearchReportPage() {
             </table>
           </div>
 
-          {research.comparativeAnalysis.insights && (
+          {research.comparativeAnalysis?.insights && (
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-zinc-950/50 border border-zinc-800/50 rounded-2xl p-6 shadow-inner">
                 <h4 className="font-bold text-zinc-200 mb-4 tracking-wide">Identified Patterns</h4>
                 <ul className="list-disc list-inside text-zinc-400 space-y-2 text-sm leading-relaxed marker:text-emerald-500">
-                  {research.comparativeAnalysis.insights.patterns?.map((p, idx) => <li key={idx}>{p}</li>)}
+                  {research.comparativeAnalysis?.insights?.patterns?.map((p, idx) => <li key={idx}>{p}</li>)}
                 </ul>
               </div>
               <div className="bg-zinc-950/50 border border-zinc-800/50 rounded-2xl p-6 shadow-inner">
                 <h4 className="font-bold text-zinc-200 mb-4 tracking-wide">Major Agreements</h4>
                 <ul className="list-disc list-inside text-zinc-400 space-y-2 text-sm leading-relaxed marker:text-blue-500">
-                  {research.comparativeAnalysis.insights.majorAgreements?.map((a, idx) => <li key={idx}>{a}</li>)}
+                  {research.comparativeAnalysis?.insights?.majorAgreements?.map((a, idx) => <li key={idx}>{a}</li>)}
                 </ul>
               </div>
             </div>
@@ -683,7 +683,7 @@ export default function ResearchReportPage() {
                 <h3 className="font-bold text-lg text-emerald-100">Widely Agreed Points</h3>
               </div>
               <ul className="space-y-4">
-                {research.consensusVsContradiction.widelyAgreedPoints?.map((p, idx) => (
+                {research.consensusVsContradiction?.widelyAgreedPoints?.map((p, idx) => (
                   <li key={idx} className="flex gap-3 text-zinc-300 text-sm leading-relaxed">
                     <span className="text-emerald-400 flex-shrink-0 mt-0.5">✓</span>{p}
                   </li>
@@ -697,7 +697,7 @@ export default function ResearchReportPage() {
                 <h3 className="font-bold text-lg text-orange-100">Debated Views</h3>
               </div>
               <div className="space-y-5">
-                {research.consensusVsContradiction.debatedViews?.map((d, idx) => (
+                {research.consensusVsContradiction?.debatedViews?.map((d, idx) => (
                   <div key={idx} className="border-l-2 border-orange-500/30 pl-4">
                     <h4 className="font-bold text-zinc-200 mb-2">{d.topic}</h4>
                     <ul className="text-sm text-zinc-400 space-y-1.5 list-disc list-inside marker:text-orange-500/50">
@@ -709,13 +709,13 @@ export default function ResearchReportPage() {
             </div>
           </div>
           
-          {research.consensusVsContradiction.minorityPerspectives?.length > 0 && (
+          {research.consensusVsContradiction?.minorityPerspectives?.length > 0 && (
             <div className="bg-purple-500/5 border border-purple-500/20 rounded-2xl p-6 shadow-inner">
               <h3 className="font-bold text-lg mb-4 text-purple-300 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5" /> Minority Perspectives
               </h3>
               <ul className="grid sm:grid-cols-2 gap-4 text-zinc-300 text-sm">
-                {research.consensusVsContradiction.minorityPerspectives.map((p, idx) => (
+                {research.consensusVsContradiction?.minorityPerspectives?.map((p, idx) => (
                   <li key={idx} className="flex gap-2.5 bg-zinc-950/50 p-3 rounded-xl border border-zinc-800/50">
                     <span className="text-purple-400 flex-shrink-0 mt-0.5">◆</span>
                     <span className="leading-relaxed">{p}</span>
@@ -745,8 +745,8 @@ export default function ResearchReportPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
-                  {(research.sourceComparisonReport.sourceRatings || []).map((s) => {
-                    const isRec = (research.sourceComparisonReport.recommendedReading || []).includes(s.index);
+                  {(research.sourceComparisonReport?.sourceRatings || []).map((s) => {
+                    const isRec = (research.sourceComparisonReport?.recommendedReading || []).includes(s.index);
                     return (
                       <tr key={s.index} className={`hover:bg-zinc-900/50 transition-colors ${isRec ? "bg-emerald-500/5" : ""}`}>
                         <td className="p-4 text-zinc-500 font-mono font-bold">{s.index}</td>
@@ -791,7 +791,7 @@ export default function ResearchReportPage() {
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">
-              {research.sourceComparisonReport.mostCredibleSource && (
+              {research.sourceComparisonReport?.mostCredibleSource && (
                 <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 shadow-inner">
                   <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <TrophyIcon className="w-3.5 h-3.5" /> Most Credible
@@ -800,7 +800,7 @@ export default function ResearchReportPage() {
                   <div className="text-zinc-400 text-sm leading-relaxed">{research.sourceComparisonReport.mostCredibleSource.reason}</div>
                 </div>
               )}
-              {research.sourceComparisonReport.mostUniqueSource && (
+              {research.sourceComparisonReport?.mostUniqueSource && (
                 <div className="bg-purple-500/5 border border-purple-500/20 rounded-2xl p-5 shadow-inner">
                   <div className="text-[11px] font-bold text-purple-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <ZapIcon className="w-3.5 h-3.5" /> Most Unique
@@ -809,7 +809,7 @@ export default function ResearchReportPage() {
                   <div className="text-zinc-400 text-sm leading-relaxed">{research.sourceComparisonReport.mostUniqueSource.reason}</div>
                 </div>
               )}
-              {research.sourceComparisonReport.overallVerdict && (
+              {research.sourceComparisonReport?.overallVerdict && (
                 <div className="bg-zinc-950/50 border border-zinc-800/80 rounded-2xl p-5 shadow-inner">
                   <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Overall Verdict</div>
                   <div className="text-zinc-300 text-sm leading-relaxed">{research.sourceComparisonReport.overallVerdict}</div>
