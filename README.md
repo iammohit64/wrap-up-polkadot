@@ -13,7 +13,7 @@
 
 Wrap-Up Evolved is a fully-fledged decentralized social platform engineered for the modern Web3 researcher. We position it as a tool to **"Study Differently."** Instead of drowning in noisy Twitter feeds, scattered Discord servers, or financially motivated shilling, Wrap-Up delivers a **gamified, decentralized ecosystem** where high-quality articles and AI-generated research reports are curated, discussed, and permanently recorded on-chain via **Polkadot Hub Testnet**.
 
-The platform merges the speed and intelligence of AI with the trust and transparency of blockchain — creating a new category of tool: a **verifiable, community-driven knowledge layer for Web3.**
+The platform merges the speed and intelligence of AI with the trust and transparency of blockchain, creating a new category of tool: a **verifiable, community-driven knowledge layer for Web3.**
 
 ---
 
@@ -41,20 +41,20 @@ Wrap-Up Evolved is the platform where:
 
 ---
 
-## 🌟 Core Features — In Full Detail
+## 🌟 Core Features - In Full Detail
 
 ### 1. 🤖 AI Research Report Generator
 
 Users enter any research topic or question, and Wrap-Up's backend AI engine autonomously:
 
 - **Scours the live web** for the most relevant and recent sources
-- **Synthesizes a structured, high-quality research report** — complete with key findings, summaries, and source citations
+- **Synthesizes a structured, high-quality research report** - complete with key findings, summaries, and source citations
 - **Uploads the compiled report to IPFS** via Pinata, producing a permanent, tamper-proof content hash
 - **Commits the IPFS hash on-chain** to the WrapUp smart contract on Polkadot Hub Testnet, creating an immutable publication record
 
-The result is a research report that is not just informative — it is **verifiably published on a decentralized, censorship-resistant network.** Every report gets its own on-chain fingerprint that anyone can independently verify.
+The result is a research report that is not just informative, it is **verifiably published on a decentralized, censorship-resistant network.** Every report gets its own on-chain fingerprint that anyone can independently verify.
 
-> **Use Case:** A user wants to understand the current state of Polkadot's parachain ecosystem. Instead of spending hours reading, they submit the prompt to Wrap-Up and receive a synthesized, sourced report in seconds — permanently stored and community-ranked.
+> **Use Case:** A user wants to understand the current state of Polkadot's parachain ecosystem. Instead of spending hours reading, they submit the prompt to Wrap-Up and receive a synthesized, sourced report in seconds, permanently stored and community-ranked.
 
 ---
 
@@ -65,10 +65,10 @@ Any user can submit external article links to the platform. Wrap-Up's curation e
 - **Fetches and extracts the full article content** for clean, distraction-free in-app reading (no more paywalls or ad-heavy pages)
 - **Displays the article** in a beautiful reader view with full formatting intact
 - **Records the submission on-chain**, anchoring it to the submitter's wallet address and timestamp
-- **Tracks community engagement** — upvotes, comments, and saves — aggregated into a **live curation leaderboard**
+- **Tracks community engagement** - upvotes, comments, and saves - aggregated into a **live curation leaderboard**
 
 #### 🏆 The WUP Token Reward System
-Users who consistently submit high-quality articles that rise to the top of the leaderboard **earn WUP tokens** — the platform's native utility token. This creates a self-reinforcing incentive loop:
+Users who consistently submit high-quality articles that rise to the top of the leaderboard **earn WUP tokens** - the platform's native utility token. This creates a self-reinforcing incentive loop:
 
 ```
 Submit quality content → Community upvotes → Climb leaderboard → Earn WUP rewards
@@ -80,14 +80,14 @@ This token model aligns community incentives with content quality, making spam a
 
 ### 3. ⚖️ Article Comparator Tool
 
-One of Wrap-Up's most powerful productivity features is the built-in **Article Comparator** — a side-by-side reading and analysis tool that allows users to:
+One of Wrap-Up's most powerful productivity features is the built-in **Article Comparator** - a side-by-side reading and analysis tool that allows users to:
 
 - **Load any two articles or AI research reports** into a split-screen view simultaneously
 - **Highlight and compare** key claims, data points, and conclusions across sources
-- **Identify contradictions** between sources on the same topic — critical for spotting biased or misleading content
+- **Identify contradictions** between sources on the same topic - critical for spotting biased or misleading content
 - **Copy, annotate, and export** comparison sessions for further study or sharing
 
-> **Use Case:** A researcher wants to compare a bullish vs. bearish analysis on a DeFi protocol. They load both into the comparator and immediately see where the arguments diverge — without switching tabs or losing context.
+> **Use Case:** A researcher wants to compare a bullish vs. bearish analysis on a DeFi protocol. They load both into the comparator and immediately see where the arguments diverge, without switching tabs or losing context.
 
 ---
 
@@ -95,12 +95,12 @@ One of Wrap-Up's most powerful productivity features is the built-in **Article C
 
 Every article and research report on Wrap-Up is a living social object. Beneath each piece of content, users can:
 
-- **Post threaded comments** — full Reddit-style nested discussions that allow deep, contextual debate
+- **Post threaded comments** - full Reddit-style nested discussions that allow deep, contextual debate
 - **Upvote and downvote** both comments and articles, with scores reflecting genuine community sentiment
 - **Tag comments** as questions, corrections, or endorsements for better discussion navigation
 - **View the on-chain record** of all interactions, ensuring that engagement data cannot be silently deleted or manipulated by any central authority
 
-All social interactions are **permanently backed by the blockchain**, meaning discussion history is owned by the community — not by any company or server.
+All social interactions are **permanently backed by the blockchain**, meaning discussion history is owned by the community, not by any company or server.
 
 ---
 
@@ -115,19 +115,19 @@ WUP is the native ERC-20 utility token that powers all economic activity on the 
 | Claim rewards from the WUPClaimer contract | **Receive WUP** |
 | Future: Stake WUP to boost content visibility | **Spend WUP** |
 
-The WUPClaimer contract manages reward distribution in a transparent, auditable manner — users can verify every token emission directly on-chain.
+The WUPClaimer contract manages reward distribution in a transparent, auditable manner, users can verify every token emission directly on-chain.
 
 ---
 
 ### 6. 🔒 On-Chain Content Provenance
 
-Every piece of content on Wrap-Up — whether AI-generated or user-curated — has a **cryptographic proof of existence** stored on the Polkadot Hub Testnet. This means:
+Every piece of content on Wrap-Up, whether AI-generated or user-curated, has a **cryptographic proof of existence** stored on the Polkadot Hub Testnet. This means:
 
 - **Who published it** (wallet address)
 - **When it was published** (block timestamp)
-- **What the content is** (IPFS hash — immutable reference to the full text)
+- **What the content is** (IPFS hash - immutable reference to the full text)
 
-This is the foundation of **verifiable knowledge on Web3** — content that cannot be retroactively altered, censored, or disappeared.
+This is the foundation of **verifiable knowledge on Web3** - content that cannot be retroactively altered, censored, or disappeared.
 
 ---
 
@@ -192,11 +192,11 @@ User sees verified, on-chain content card
 
 Wrap-Up Evolved is deployed on the **Polkadot Hub Testnet**, leveraging Polkadot's EVM-compatible infrastructure to deliver:
 
-- **Fast, low-cost transactions** — ideal for high-frequency social interactions like upvotes and comment submissions
-- **EVM Compatibility** — full support for Solidity smart contracts, enabling seamless developer experience with Foundry and Wagmi
-- **Ecosystem alignment** — built within the broader Polkadot ecosystem, positioning Wrap-Up to expand across parachains as the platform scales
+- **Fast, low-cost transactions** - ideal for high-frequency social interactions like upvotes and comment submissions
+- **EVM Compatibility** - full support for Solidity smart contracts, enabling seamless developer experience with Foundry and Wagmi
+- **Ecosystem alignment** - built within the broader Polkadot ecosystem, positioning Wrap-Up to expand across parachains as the platform scales
 
-### ✅ Deployed Contracts — Polkadot Hub Testnet
+### ✅ Deployed Contracts - Polkadot Hub Testnet
 
 | Contract | Address |
 |---|---|
@@ -206,20 +206,20 @@ Wrap-Up Evolved is deployed on the **Polkadot Hub Testnet**, leveraging Polkadot
 
 ### Smart Contract Architecture
 
-#### `WrapUp.sol` — Core Contract
+#### `WrapUp.sol` - Core Contract
 - Stores IPFS hashes for all curated articles and AI research reports
 - Tracks upvote counts and community engagement scores per content item
 - Maps content to submitter wallet addresses for reward attribution
 - Emits events consumed by the frontend for real-time UI updates
 
-#### `WUPToken.sol` — ERC-20 Utility Token
+#### `WUPToken.sol` - ERC-20 Utility Token
 - Standard ERC-20 implementation with minting controlled by the WUPClaimer contract
 - Tracks balances across all platform participants
 - Enables future governance and staking features
 
-#### `WUPClaimer.sol` — Reward Distribution
+#### `WUPClaimer.sol` - Reward Distribution
 - Manages the calculation and distribution of WUP token rewards to top content contributors
-- Implements leaderboard-based claim logic — only addresses ranked above a threshold are eligible
+- Implements leaderboard-based claim logic, only addresses ranked above a threshold are eligible
 - Fully transparent: every reward emission is verifiable on-chain
 
 ---
@@ -316,7 +316,7 @@ forge script script/Deploy.s.sol --rpc-url <polkadot_hub_testnet_rpc> --broadcas
 | Dimension | Wrap-Up Evolved |
 |---|---|
 | **Real Problem** | Web3 information overload and misinformation are unsolved, billion-dollar problems |
-| **Full-Stack Completeness** | Working frontend, backend, smart contracts, IPFS storage — all integrated end-to-end |
+| **Full-Stack Completeness** | Working frontend, backend, smart contracts, IPFS storage - all integrated end-to-end |
 | **Genuine Decentralization** | Content provenance and social data backed by the blockchain, not a database |
 | **Token Economic Design** | Incentives aligned so good content is financially rational to produce |
 | **Polkadot Native** | EVM-compatible contracts deployed and verified on Polkadot Hub Testnet |
@@ -327,11 +327,11 @@ forge script script/Deploy.s.sol --rpc-url <polkadot_hub_testnet_rpc> --broadcas
 
 ## 🔮 Roadmap
 
-- [ ] **Governance Module** — WUP holders vote on curation policies and platform parameters
-- [ ] **Parachain Expansion** — Deploy across additional Polkadot parachains for cross-chain content discovery
-- [ ] **Mobile App** — React Native client for on-the-go research
-- [ ] **Reputation System** — NFT-based reputation badges for top curators
-- [ ] **DAO Treasury** — Protocol fees fund community grants for high-quality research
+- [ ] **Governance Module** - WUP holders vote on curation policies and platform parameters
+- [ ] **Parachain Expansion** - Deploy across additional Polkadot parachains for cross-chain content discovery
+- [ ] **Mobile App** - React Native client for on-the-go research
+- [ ] **Reputation System** - NFT-based reputation badges for top curators
+- [ ] **DAO Treasury** - Protocol fees fund community grants for high-quality research
 
 ---
 
